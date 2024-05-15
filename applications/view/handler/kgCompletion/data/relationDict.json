@@ -1,0 +1,1 @@
+{"stoi": {"subclass_of": 0, "senmatic": 1, "PeerOf": 2, "ChildOf": 3, "CanFollow": 4, "targetof": 5, "instanceof": 6, "ParentOf": 7, "CanPrecede": 8}, "itos": ["subclass_of", "senmatic", "PeerOf", "ChildOf", "CanFollow", "targetof", "instanceof", "ParentOf", "CanPrecede"]}

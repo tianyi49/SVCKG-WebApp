@@ -1,0 +1,369 @@
+{% extends "index/navigate.html" %} {% block mainbody %}
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="/static/js/echarts.js"></script>
+
+</head>
+<title>实体查询</title>
+<div class="container" >
+    <div class="row">
+    <!--head start-->
+    <div class="col-md-12">
+        <h3 class="page-header"><i class="fa fa-share-alt" aria-hidden="true"></i> 实体查询 </h3>
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i><a href="/admin/welcome">主页</a></li>
+                <li><i class="fa fa-share-alt" aria-hidden="true"></i>实体查询</li>
+            </ol>
+    </div>
+<div class = "col-md-12">
+        <div class="panel panel-default">
+             <header class="panel-heading">
+            标签列表 :
+        </header>
+            <div class = "panel-body" >
+                <div class="table-responsive" style="height:300px;overflow-y: scroll;">
+                               <table class="table table-striped table-bordered ">
+                                 <thead>
+                                   <tr>
+                                     <th>标签</th>
+                                     <th></th>
+                                     <th></th>
+                                       <th></th>
+                                     <th></th>
+                                        <th></th>
+                                     <th></th>
+                                   </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% set cnt = [0] %}
+                                 {% for label_num in home_dict["label_num_list"] %}
+                                      {% if cnt.append(cnt.pop() + 1) %}{% endif %}
+                                     {% if loop.index%6==0 %}
+                                      {% for i in [1,2,3,4,5,6,7,8,9,10,11,12] %}
+                                        {% if cnt[0]/6==i %}
+                                     <tr>
+                                         <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-6]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-6]['labels(n)'][0] }}</a></td>
+                                     <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-5]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-5]['labels(n)'][0] }}</a></td>
+                                     <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-4]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-4]['labels(n)'][0] }}</a></td>
+                                     <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-3]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-3]['labels(n)'][0] }}</a></td>
+                                     <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-2]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-2]['labels(n)'][0] }}</a></td>
+                                     <td><a href="/search_entity/{{ home_dict["label_num_list"][i*6-1]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][i*6-1]['labels(n)'][0] }}</a></td>
+                                     </tr>
+                                          {% endif %}
+                                          {% endfor %}
+                                     {% endif %}
+                                     {% if loop.last %}
+                                     {% for j in [0,1,2,3,4,5] %}
+                                         {% if j<cnt[0]%6 %}
+                                             <td><a href="/search_entity/{{ home_dict["label_num_list"][cnt[0]-j-1]['labels(n)'][0] }}/1/0">{{ home_dict["label_num_list"][cnt[0]-j-1]['labels(n)'][0] }}</a></td>
+                                         {% endif %}
+                                         {% endfor %}
+                                     {% endif %}
+                                 {% endfor %}
+                                 </tbody>
+                               </table>
+                              </div>
+            </div>
+        </div>
+    </div>
+{% if not entity_tag=='None' %}
+    <div class = "col-md-12">
+    <div class="panel panel-default">
+    <header class="panel-heading">
+        实体列表 :(每页最多展示5000个实体） <br>
+        搜索时间：{{ cost_time1 }}秒
+    </header>
+        <div class = "panel-body" >
+            <div class="table-responsive" style="height:350px;overflow-y: scroll;">
+                           <table class="table table-striped table-bordered">
+                             <thead>
+                               <tr>
+                                  <th>序号</th>
+                                 <th>实体</th>
+                               </tr>
+                             </thead>
+                             <tbody>
+                             {% for tuple in tuplelist1 %}
+                               <tr>
+                                 <td>{{ loop.index }}</td>
+                                   <td><b>{{ tuple[0]}}</b>
+                                     {% for key in tuple[1] %}
+                                         <br><b style="color: red">{{ key }}</b>:{{ tuple[1][key]}}
+                                         {% endfor %}
+                                 </td>
+                               </tr>
+                             {% endfor %}
+                             </tbody>
+                           </table>
+                          </div>
+               <ul class="pager">
+       <li><a href="/search_entity/{{entity_tag}}/1/0">第一页</a></li>
+	<li><a href="/search_entity/{{entity_tag}}/{{ pagecounter }}/2">前一页</a></li>
+	<li><a href="/search_entity/{{entity_tag}}/{{ pagecounter }}/1">后一页</a></li>
+   <li><p >当前第{{ pagecounter }}/{{max_page_num}}页</p></li>
+</ul>
+                       <form  method="post" action="/search_entity/{{entity_tag}}/0/0">
+                    {{ page_form.csrf_token }}
+                        <div class="input-group" style="align-content: center">
+                            {{ page_form.page_num_input(class="form-control", style="width:120px", placeholder="输入页数",autocomplete="on") }}
+                            {{ page_form.submit3(class="btn btn-primary", style="background-color:#4592fe; margin: 20px 0px;") }}
+                        </div>
+                   </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+    <div class = "col-md-12 ">
+        <div class="panel panel-default ">
+            <header class = "panel-heading">
+                查询条件：
+            </header>
+            <div class = "panel-body">
+                <!--搜索框-->
+                <form method="post" action="/search_entity/None/0/0">
+                    {{ form.csrf_token }}
+                    <div>
+                        <div class="input-group">
+                            {{ form.entity(class="form-control", placeholder="输入 标签:实体名",autocomplete="on") }}
+                            {{ form.submit(class="btn btn-primary", style="background-color:#4592fe; margin: 20px 0px;") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        <div class = "col-md-12">
+            {% if not tuplelist[0] %}
+                <div class="panel panel-default">
+                    <header class ="panel-heading">
+                        <h2>数据库中暂未添加该实体，或者不恰当的输入</h2>
+                    </header>
+                </div>
+            {% endif %}
+        </div>
+    </p>
+<!--实体关系查询-->
+{% if tuplelist[0]  %}
+    {% if not tuplelist[0]=='padding'  %}
+    <!-- Echart Dom对象（实体关系） -->
+    <div class = "col-md-12">
+        <div class="panel panel-default ">
+            <header class="panel-heading">
+                关系图 :
+             (搜索时间{{ cost_time }}秒
+                )
+            </header>
+            <div class = "panel-body ">
+                <div id="graph" style="width: 120%;height:900px;"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{%  endif %}
+{% if tuplelist %}
+    {% if not tuplelist[0]=='padding'  %}
+<div class = "col-md-12">
+    <div class="panel panel-default">
+    <header class="panel-heading">
+        关系列表 :
+    </header>
+        <div class = "panel-body" >
+            <div class="table-responsive" style="height:700px;overflow-y: scroll;">
+                           <table class="table table-striped table-bordered">
+                             <thead>
+                               <tr>
+                                  <th>序号</th>
+                                 <th>实体一</th>
+                                 <th>关系</th>
+                                 <th>实体二</th>
+                               </tr>
+                             </thead>
+                             <tbody>
+                             {% for tuple in tuplelist %}
+                               <tr>
+                                 <td>{{ loop.index }}</td>
+                                   <td><b>{{ tuple[0][0]}}</b>
+                                     {% for key in tuple[0][1] %}
+                                         <br><b style="color: red">{{ key }}</b>:{{ tuple[0][1][key]}}
+                                         {% endfor %}
+                                 </td>
+                                 <td>{{tuple[1] }}</td>
+                                   <td><b>{{ tuple[2][0]}}</b>
+                                     {% for key in tuple[2][1] %}
+                                         <br><b>{{ key }}</b>:{{ tuple[2][1][key]}}
+                                         {% endfor %}
+                                 </td>
+                               </tr>
+                             {% endfor %}
+                             </tbody>
+                           </table>
+                          </div>
+        </div>
+    </div>
+</div>
+    {% endif %}
+{% endif %}
+</div>
+</div>
+{% if tuplelist[0]  %}
+    {% if not tuplelist[0]=='padding'  %}
+        <script type="text/javascript">
+                // 基于查询结果：初始化Data和Links列表，用于Echarts可视化输出
+                var tuplelist = {{ tuplelist|safe }} ;
+                var data = [] ;
+                var links = [] ;
+                var maxDisPlayNode = 80;
+                id=0
+                for( var i = 0 ;i < Math.min(maxDisPlayNode,tuplelist.length) ; i++ ){
+                    var flag = 1 ;
+                    relation = {}
+                    relation['value'] = [i,tuplelist[i][1]];
+                    relation['category'] = 0 ;
+                    node = {} ;
+                    node['draggable'] = true ;   //是否允许拖拽
+
+                    node['category'] = 1 ;
+                    node['name']=tuplelist[i][0][0]
+                    node['value'] = tuplelist[i][0][1]['name'] ;
+                    if(tuplelist[0][0][1]['name']=== node['value'] ) {
+                        if (tuplelist[0][0][0] === node['name']) {
+                            node['category'] = 0;
+                        }
+                    }
+                    for(var j = 0 ; j<data.length ;j++){
+                        if(data[j]['value'] === node['value'] ){
+                            if(data[j]['name'] === node['name']) {
+                                relation['source'] = data[j]['id'];
+                                flag = 0;
+                                break;
+                            }
+                        }
+                    }
+                     if(flag == 1){
+                         id=i+50;
+                         node['id']=id.toString();
+                         relation['source'] = node['id'] ;
+                         data.push(node) ;
+                    }
+                    flag = 1
+                    node = {} ;
+                    node['category'] = 1 ;
+                    node['draggable'] = true ;   //是否允许拖拽
+                    node['name']=tuplelist[i][2][0]
+                    node['value'] = tuplelist[i][2][1]['name'] ;
+                    if(tuplelist[0][0][1]['name']=== node['value'] ) {
+                        if (tuplelist[0][0][0] === node['name']) {
+                            node['category'] = 0;
+                        }
+                    }
+                    for(var j = 0 ; j<data.length ;j++){
+                        if(data[j]['value'] === node['value']){
+                            if(data[j]['name'] === node['name']) {
+                                relation['target'] = data[j]['id'];
+                                flag = 0;
+                                break;
+                            }
+                        }
+                    }
+                     if(flag == 1){
+                         id=1200+i;
+                         node['id']=id.toString();
+                         relation['target'] = node['id'] ;
+                        data.push(node) ;
+                    }
+                        relation['symbolSize'] = 10
+                        links.push(relation) ;
+                }
+
+                // 基于准备好的数据：Data和Links，设置Echarts参数
+                var myChart = echarts.init(document.getElementById('graph'));
+                option = {
+                    title: {
+                        text: ''
+                    },                //标题
+                    tooltip: {
+                        formatter: "{c}",
+                        },                           //提示框配置
+                    animationDurationUpdate: 1500,
+                    animationEasingUpdate: 'quinticInOut',
+                    legend: {
+                        x: "left",
+                        show: true,
+                    },
+                    series: [    //可以把标签动态嵌入
+                        {
+                            type: 'graph',                //系列：
+                            layout: 'force',
+                            symbolSize: 60,
+                            focusNodeAdjacency: true,
+                            roam: true,
+                            edgeSymbol: ['none', 'arrow'],
+                            categories: [
+                                {
+                                name: '查询节点',
+                                itemStyle: {
+                                    normal: {
+                                        color: "#009800",
+                                    }
+                                }
+                            }, {
+                                name: '相关节点',
+                                itemStyle: {
+                                    normal: {
+                                        color: "#0a9bec",
+                                    }
+                                }
+                            }],
+                            label: {
+                                normal: {
+                                    show:true,
+                                    formatter: "{b}",
+                                    textStyle: {
+                                        color:"#201a32",
+                                        fontSize: 13,
+                                    }
+                                }
+                            },               //节点标签样式
+                            force: {
+                                     repulsion: [500,1600],  //节点之间的斥力因子。支持数组表达斥力范围，值越大斥力越大。
+                                     edgeLength:[140,200],   //边的两个节点之间的距离，值越小则长度越长，这个距离也会受 repulsion影响。
+                                     gravity: 0.16,  //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
+                                     layoutAnimation : false  //初始化时转动动画
+                            },
+                            edgeSymbolSize: [40, 100],
+                            edgeLabel: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {
+                                        color:"#201a32",
+                                        fontSize: 12
+
+                                    },
+                                     formatter: function(params) {
+                                        return params.value[1]  }
+                                }
+                            },           //边标签样式
+                            data: data,                 //节点
+                            links: links,               //节点间的关系
+                            lineStyle: {
+                                normal: {
+                                    opacity: 0.9,
+                                    width: 1.3,
+                                    curveness: 0.07,
+                                    color:"#ec0a0a"
+                                }
+                            }            // 连接线的风格
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+        </script>
+    {% endif %}
+{% endif %}
+{% endblock %}

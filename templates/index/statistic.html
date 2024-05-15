@@ -1,0 +1,302 @@
+{% extends "index/navigate.html" %} {% block mainbody %}
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="/static/js/echarts.js"></script>
+
+</head>
+<title>关系</title>
+<div class="container">
+    <div class="row">
+    <!--head start-->
+    <div class="col-md-12">
+        <h3 class="page-header"><i class="fa fa-link" aria-hidden="true"></i> 统计分析 </h3>
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i><a href="/admin/welcome">主页</a></li>
+                <li><i class="fa fa-link" aria-hidden="true"></i>统计分析</li>
+            </ol>
+    </div>
+
+    <div class = "col-md-12">
+    	<div class = "panel panel-default">
+			<header class="panel-heading">
+            漏洞分布：
+       		</header>
+       		<div class = "panel-body">
+				<form method="post" action="/statistic_analysis">
+                    {{ form.csrf_token }}
+					<div class="input-group">
+                        统计类型：{{ form.statistic_type(class="form-control", style="width:200px;margin:0px 20px;") }}
+						开始时间：{{ form.start_time1(class="form-control",type="date" ,min="2002-01-01",max="2023-01-05",style="width:200px;margin:0px 20px;") }}
+                        结束时间：{{ form.end_time1(class="form-control", type="date" ,min="2002-01-01",max="2023-01-05",style="width:200px;margin:0px 20px;") }}
+						{{ form.submit(class="btn btn-primary", style="background-color:#4592fe;margin:0px 20px;") }}
+					</div>
+                </form>
+			</div>
+		</div>
+	</div>
+        <p>
+        <div class = "col-md-12">
+            {% if select_dict['flag'] ==2%}
+                <div class="panel panel-default">
+                    <header class ="panel-heading">
+                        <h2>不恰当的输入</h2>
+                    </header>
+                </div>
+            {% endif %}
+        </div>
+    </p>
+  {% if select_dict['flag'] ==1  %}
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div class = "col-md-12">
+        <div class="panel panel-default ">
+            <div class = "panel-body ">
+                {% if     formtype==2 and select_dict['本地']==0 and select_dict['网络']==0 and select_dict['未分类']==0%}
+                    <h2>所有数据为0</h2>
+                {% endif %}
+                <div id="graph" style="width: 100%;height:600px;"></div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+    <div class = "col-md-12">
+            <div class = "panel panel-default">
+                <header class="panel-heading">
+                漏洞数量趋势：
+                </header>
+                <div class = "panel-body">
+                    <form method="post" action="/statistic_analysis">
+                        {{ form2.csrf_token }}
+                        <div class="input-group">
+                            漏洞危害程度：{{ form2.statistic_type2(class="form-control", style="width:200px;margin:0px 20px;") }}
+                            开始时间：{{ form2.start_time2(class="form-control",type="date" ,min="2002-01-01",max="2023-01-05",style="width:200px;margin:0px 20px;") }}
+                            结束时间：{{ form2.end_time2(class="form-control", type="date",min="2002-01-01",max="2023-01-05",style="width:200px;margin:0px 20px;") }}
+                            {{ form2.submit2(class="btn btn-primary", style="background-color:#4592fe;margin:0px 20px;") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+      {% if select_dict2['flag'] ==1  %}
+
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div class = "col-md-12">
+        <div class="panel panel-default ">
+            <div class = "panel-body ">
+                <div id="graph2" style="width: 100%;height:600px;"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% if select_dict['flag'] ==1 %}
+    {% if formtype==1 or formtype==3 or formtype==4%}
+    <script type="text/javascript">
+    var txettitle;
+    var data;
+    var chartDom = document.getElementById('graph');
+    txettitle='漏洞分布'
+    var myChart = echarts.init(chartDom);
+                       option = {
+          title: {
+            text:txettitle,
+              left: 'right',
+          },
+          tooltip: {
+              formatter: '{b}:{c}: ({d}%)',
+            trigger: 'item',
+              textStyle:{
+                 fontsize:18
+             }
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left',
+          },
+          series: [
+            {
+              name: 'Access From',
+              type: 'pie',
+              radius: [60, '90%'],
+              data: {{select_dict['data']|safe}},
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ]
+        };
+                myChart.setOption(option);
+        </script>
+        {% endif %}
+{% endif %}
+{% if select_dict['flag'] ==1 %}
+    {% if formtype==2  %}
+    <script type="text/javascript">
+        var chartDom = document.getElementById('graph');
+        var myChart = echarts.init(chartDom);
+        var option;
+        var data = [
+          {
+            name: '网络',
+            value: {{select_dict['网络'] }},
+            children: [
+              {
+                name: '相邻网络',
+                value: {{select_dict['相邻网络']}},
+              },
+              {
+                name: '远程网络',
+                value: {{select_dict['远程网络'] }},
+              },
+              {
+                name: '未分类',
+                value: {{select_dict['网络未分类'] }},
+              }
+            ]
+          },
+          {
+            name: '本地',
+            value: {{select_dict['本地']}},
+            children: [
+              {
+                name: '本地读写',
+                value: {{select_dict['本地读写']}},
+              },
+              {
+                name: '物理接触',
+                value:{{select_dict['物理接触']}},
+              },
+              {
+                name: '未分类',
+                value: {{select_dict['本地未分类'] }},
+              }
+            ]
+          },
+            {
+                name: '未分类',
+                value: {{select_dict['未分类'] }},
+            }
+        ];
+        option = {
+            title: {
+            text: '漏洞分布
+            left: 'right'
+          },
+          tooltip: {
+              formatter: '{b}:{c}',
+            trigger: 'item'
+          },
+          series: {
+            type: 'sunburst',
+            data: data,
+            radius: [60, '90%'],
+            itemStyle: {
+              borderRadius: 7,
+              borderWidth: 2
+            },
+            label: {
+              show: true
+            }
+          }
+};
+        option && myChart.setOption(option);
+        </script>
+        {% endif %}
+{% endif %}
+    <p>
+        <div class = "col-md-12">
+            {% if select_dict2['flag'] ==2%}
+                <div class="panel panel-default">
+                    <header class ="panel-heading">
+                        <h2>不恰当的输入</h2>
+                    </header>
+                </div>
+            {% endif %}
+        </div>
+    </p>
+{% if select_dict2['flag'] ==1 %}
+<script>
+   var chartDom = document.getElementById('graph2');
+    var echartsRecords = echarts.init(chartDom);
+    var option = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: [{
+        type: 'category',
+        data: {{ select_dict2['date']|safe}},
+        axisLine: {
+          lineStyle: {
+            color: '#999'
+          }
+        }
+      }],
+      yAxis: [{
+        type: 'value',
+        splitNumber: 4,
+        splitLine: {
+          lineStyle: {
+            type: 'dashed',
+            color: '#DDD'
+          }
+        },
+        axisLine: {
+          show: false,
+          lineStyle: {
+            color: '#333'
+          },
+        },
+        nameTextStyle: {
+          color: '#999'
+        },
+        splitArea: {
+          show: false
+        }
+      }],
+      series: [{
+        name: '漏洞数量',
+        type: 'line',
+        data:{{ select_dict2['value']}} ,
+        lineStyle: {
+          normal: {
+            width: 8,
+            color: {
+              type: 'linear',
+
+              colorStops: [{
+                offset: 0,
+                color: '#A9F387' // 0% 处的颜色
+              }, {
+                offset: 1,
+                color: '#48D8BF' // 100% 处的颜色
+              }],
+              globalCoord: false // 缺省为 false
+            },
+            shadowColor: 'rgba(72,216,191, 0.3)',
+            shadowBlur: 10,
+            shadowOffsetY: 20
+          }
+        },
+        itemStyle: {
+          normal: {
+            color: '#fff',
+            borderWidth: 10,
+            borderColor: '#A9F387'
+          }
+        },
+        smooth: true
+      }]
+    }
+    var m={{ select_dict['date']}}
+    console.log(m)
+    echartsRecords.setOption(option)
+</script>
+{% endif %}
+{% endblock %}
